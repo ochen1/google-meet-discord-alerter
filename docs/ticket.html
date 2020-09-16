@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>ResourceZone - Submit an Error Ticket</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body,
+        input,
+        textarea {
+            background-color: #000;
+            color: #0F0;
+            font-family: "Lucida Console", Monaco, monospace;
+        }
+
+        #ticketForm {
+            margin: 2vh 1vw;
+        }
+
+        #ticketDescription {
+            width: 98%;
+            height: 50vh;
+            padding: 1%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        input[type="text"] {
+            border: 0 solid transparent;
+            outline: 1px solid transparent;
+            outline-offset: 16px;
+            margin: 8px;
+            transition: all 0.2s ease;
+        }
+
+        input:focus[type="text"] {
+            outline: 8px solid #A569BD;
+            outline-offset: 0;
+        }
+
+        #ticketName {
+            font-size: 1em;
+            padding: 0.4em 16px;
+            width: 75vw;
+            margin-bottom: 16px;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+        }
+
+        #submit {
+            margin-top: 10px;
+            padding: 2%;
+            border: 8px outset;
+            font-size: 150%;
+        }
+
+        #submit:active {
+            border: 8px inset;
+        }
+
+        #emailContainer {
+            margin: 1em 0;
+            color: white;
+            font-weight: bold;
+        }
+
+        #email {
+            padding: 0.4em 8px;
+            width: 512px;
+            max-width: 24vw;
+            border: 4px outset;
+        }
+
+        #email:focus {
+            border: 4px inset;
+        }
+
+        #overlay {
+            z-index: 1000;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 6vh 4vw;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            text-align: center;
+        }
+
+        #overlayContainer {
+            margin-bottom: 2vh;
+        }
+
+        #buttonContainer {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .actionButton {
+            background: #212121;
+            padding: 0.8em 16px;
+            color: #0F0;
+            font-family: "Lucida Console", Monaco, monospace;
+            border: 2px #FF6F00 solid;
+            transition: background-color 75ms linear;
+        }
+
+        .actionButton:active {
+            background-color: #1A237E;
+            box-shadow: 0 0 20px #FF9800;
+        }
+
+        #type {
+            height: 3em;
+            vertical-align: middle;
+            background-color: #0f0f0f;
+            color: #fafafa;
+            outline: none;
+            min-width: 8ch;
+            padding: 0.2em 1.2ch;
+        }
+
+        .noselect {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+    </style>
+</head>
+
+<body class="noselect">
+    <script>
+        window.submitted = false;
+        var submitForm = function (e) {
+            window.submitted = true;
+            document.getElementById("overlay").style.display = "block";
+            document.getElementById("overlayContainer").innerText += "Thank you for your report!\nYour response is now being submitted...";
+        }
+        var successfullySubmitted = function (e) {
+            if (submitted) {
+                document.getElementById("overlayContainer").innerText += "\nYour response has been recorded.";
+                document.getElementById("buttonContainer").style.display = "block";
+                setTimeout(function () {
+                    document.getElementById("buttonContainer").style.opacity = 1;
+                }, 50);
+            }
+        }
+        var closeWindow = function (e) {
+            window.close();
+            window.setTimeout(window.close, 100);
+        }
+    </script>
+    <div id="overlay">
+        <div id="overlayContainer"></div>
+        <div id="buttonContainer">
+            <input type="button" onclick="closeWindow();" value="Close Window" class="actionButton" />
+            <input type="button" onclick="alert('This is the homepage lol.'); window.location.href = '/';"
+                value="Homepage" class="actionButton" />
+        </div>
+    </div>
+    <form
+        action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdTCP99VjlPtnRVmv0B0EZ0BynNsecdlMxv3rOXm9xy1kQOXA/formResponse"
+        target="hidden_iframe" method="POST" id="ticketForm" onsubmit="submitForm();">
+        <select name="entry.1364785700" id="type">
+            <option value="Issue">Issue</option>
+            <option value="Suggestion">Suggestion</option>
+            <option value="Complaint">Complaint</option>
+        </select>
+        <input id="ticketName" type="text" autocomplete="off" name="entry.637429331"
+            placeholder="Quick description... what is happening?" required /><br>
+        <textarea id="ticketDescription" name="entry.1998232757" placeholder="Ticket Description"></textarea><br>
+        <div id="emailContainer"><label for="email">Contact email: </label><input type="email" id="email"
+                name="emailAddress" placeholder="john.doe@domain.com" required /></div><br>
+        <input type="submit" id="submit" value="Submit!" />
+    </form>
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display: none;" onload="successfullySubmitted()" />
+</body>
+
+</html>
