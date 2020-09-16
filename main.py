@@ -70,6 +70,7 @@ def runwarning(code):
 
 
 def check():
+    global out
     for i, code in enumerate(codes):
         print(code)
         ret = system(' '.join(["./test.py", code[1]]))
