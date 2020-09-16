@@ -1,3 +1,17 @@
+# Chromedriver Profile
+vprofile/
+
+# Config files
+*.env
+history.json
+
+# Passwords
+passwd.json
+
+# Todo
+todo.txt
+todo.md
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
