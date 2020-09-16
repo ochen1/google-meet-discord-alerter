@@ -1,6 +1,5 @@
 import sys
 from itertools import repeat
-from json import load as loadJSON
 from json import loads as loadsJSON
 from os import getenv, system
 from pprint import pformat
@@ -22,8 +21,7 @@ up = time()
 app = Flask(__name__)
 auth = HTTPBasicAuth()
 
-with open("passwd.json", 'r') as f:
-    users = loadJSON(f)
+users = loadsJSON(getenv("PASSWD"))
 
 
 def runwarning(code):

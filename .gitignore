@@ -5,9 +5,6 @@ vprofile/
 *.env
 history.json
 
-# Passwords
-passwd.json
-
 # Todo
 todo.txt
 todo.md
