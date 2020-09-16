@@ -14,7 +14,7 @@ from scraper import getNumPeople
 from werkzeug.security import check_password_hash
 
 codes = loadsJSON(getenv('CODES'))
-out = list(repeat(tuple((None, 0)), len(codes)))
+out = list(repeat([None, 0], len(codes)))
 
 up = time()
 
@@ -77,7 +77,7 @@ def check():
         print(ret)
         if ret == 0 and ret != out[i][0]:
             runwarning(code)
-        out[i] = tuple((ret, time()))
+        out[i] = [ret, time()]
 
 
 schedule.every(1).minute.at(':00').do(check)
