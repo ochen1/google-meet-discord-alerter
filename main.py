@@ -82,7 +82,7 @@ def check():
     global out
     for i, code in enumerate(codes):
         print(code)
-        ret = system(' '.join([scriptdir + "test.py", code[1]]))
+        ret = system(' '.join(["python3", scriptdir + "test.py", code[1]]))
         print(ret)
         log(repr([code, ret]))
         if ret == 0 and ret != out[i][0]:
