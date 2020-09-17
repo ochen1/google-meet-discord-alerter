@@ -14,6 +14,7 @@ chrome_options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWeb
 chrome_options.add_argument(
     "--user-data-dir=" + os.path.abspath(os.getenv('VPROF_PATH')))
 chrome_options.binary_location = os.getenv('GOOGLE_CHROME_PATH')
+chrome_options.add_argument(f"--proxy-server={os.getenv('PROXY')}")
 
 
 def getNumPeople(mid):
