@@ -25,10 +25,15 @@ def assertLogin(d: WebDriver):
     d.get('https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&prompt=consent&response_type=code&client_id=407408718192.apps.googleusercontent.com&scope=email&access_type=offline&flowName=GeneralOAuthFlow')
     sleep(1)
     d.execute_script("""
-for (li of document.querySelector('.OVnw0d').children) {
-    if (li.innerText == "Use another account") {
-        li.children[0].click();
+if (document.querySelector('.OVnw0d') != null) {
+    for (li of document.querySelector('.OVnw0d').children) {
+        if (li.innerText == "Use another account") {
+            li.children[0].click();
+        }
     }
+    return true;
+} else {
+    return false;
 }
 """)
     sleep(1)

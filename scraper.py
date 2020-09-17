@@ -30,7 +30,7 @@ def getNumPeople(mid):
         v = driver.execute_script("""
     if (document.querySelector('.U04fid') != null) {    
         if (document.querySelector('.U04fid').children.length > 3) {
-            return (parseInt(document.getElementsByClassName('w5wUXb')[0].innerText) + document.querySelector('.U04fid').children.length);
+            return (parseInt(document.getElementsByClassName('w5wUXb')[0].innerText) + document.querySelector('.U04fid').children.length - 1);
         } else {
             return document.querySelector('.U04fid').children.length;
         }
