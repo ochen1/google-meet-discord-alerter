@@ -5,11 +5,12 @@ from assertGoogleLogin import assertLogin
 from selenium import webdriver
 from traceback import print_exc
 from os.path import dirname, abspath
-from pyvirtualdisplay import Display
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36")
 chrome_options.add_argument(
     "--user-data-dir=" + os.path.abspath(os.getenv('VPROF_PATH')))
 chrome_options.binary_location = os.getenv('GOOGLE_CHROME_PATH')
@@ -17,8 +18,6 @@ chrome_options.binary_location = os.getenv('GOOGLE_CHROME_PATH')
 
 def getNumPeople(mid):
     try:
-        display = Display(visible=False, size=(800, 600))
-        display.start()
         driver = webdriver.Chrome(
             executable_path=os.getenv('CHROMEDRIVER_PATH'),
             options=chrome_options
@@ -47,10 +46,6 @@ def getNumPeople(mid):
     finally:
         try:
             driver.close()
-        except:
-            pass
-        try:
-            display.stop()
         except:
             pass
     return v
