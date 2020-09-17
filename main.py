@@ -24,6 +24,8 @@ auth = HTTPBasicAuth()
 users = loadsJSON(getenv("PASSWD"))
 admins = loadsJSON(getenv("ADMINS"))
 
+skip = loadsJSON(getenv("SKIP"))
+
 scriptdir = dirname(abspath(__file__)).rstrip('/') + '/'
 
 
@@ -79,6 +81,9 @@ def runwarning(code):
 
 
 def check():
+    hours = (time() / 3600) % 24
+    if skip[0] < hours < skip[1]:
+        return
     global out
     for i, code in enumerate(codes):
         print(code)
@@ -114,6 +119,7 @@ def index():
     s = f"{sys.version}\n\
 Program is running.\n\
 Current Time: {time()}\n\
+Current Time: {strftime('%Y-%m-%d %H:%M:%S %Z', gmtime())}\n\
 Up since: {up}\n\
 Uptime: {time() - up}\n\
 Codes: {repr(codes)}\n\
