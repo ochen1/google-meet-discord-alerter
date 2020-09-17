@@ -7,7 +7,6 @@ from pprint import pformat
 from threading import Thread
 from time import gmtime, sleep, strftime, time
 
-import schedule
 from flask import Flask, Response
 from flask_httpauth import HTTPBasicAuth
 from requests import post
@@ -90,9 +89,6 @@ def check():
         out[i] = [ret, time()]
 
 
-schedule.every(1).minute.at(':00').do(check)
-
-
 @auth.verify_password
 def verify_password(username, password):
     if username in users and check_password_hash(users.get(username), password):
@@ -108,7 +104,7 @@ def locateIndex():
         '/logs',
         '/force',
         '/logs'
-    ]),content_type="text/plain")
+    ]), content_type="text/plain")
 
 
 @app.route('/')
@@ -169,8 +165,8 @@ if __name__ == "__main__":
     webThread.start()
     try:
         while True:
-            schedule.run_pending()
-            sleep(1)
+            sleep(60 - (time() % 60))
+            check()
     except KeyboardInterrupt:
         print()
     finally:
