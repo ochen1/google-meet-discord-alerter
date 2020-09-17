@@ -67,7 +67,7 @@ def runwarning(code):
                     },
                     {
                         "name": ":hash: Meet Details",
-                        "value": "Number of people in the meet as of now: %i" % getNumPeople(code[1]),
+                        "value": "Number of people in the meet as of now: %s" % getNumPeople(code[1]),
                         "inline": False
                     },
                     {
