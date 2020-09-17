@@ -38,14 +38,21 @@ if (document.querySelector('.OVnw0d') != null) {
 }
 """)
     sleep(1)
-    d.find_element_by_xpath(
-        "/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div/div[1]/div/div[1]/input").send_keys(getenv('GEMAIL'))
-    d.find_element_by_xpath(
-        "/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div/div[1]/div/div[1]/input").send_keys(Keys.RETURN)
-    sleep(2)
-    d.find_element_by_xpath(
-        "/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div[1]/div/div/div/div/div[1]/div/div[1]/input").send_keys(getenv('GPASS'))
-    d.find_element_by_xpath(
-        "/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div[1]/div/div/div/div/div[1]/div/div[1]/input").send_keys(Keys.RETURN)
+    try:
+        d.find_element_by_xpath(
+            "/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div/div[1]/div/div[1]/input").send_keys(getenv('GEMAIL'))
+        d.find_element_by_xpath(
+            "/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div/div[1]/div/div[1]/input").send_keys(Keys.RETURN)
+        sleep(2)
+        d.find_element_by_xpath(
+            "/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div[1]/div/div/div/div/div[1]/div/div[1]/input").send_keys(getenv('GPASS'))
+        d.find_element_by_xpath(
+            "/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div[1]/div/div/div/div/div[1]/div/div[1]/input").send_keys(Keys.RETURN)
+    except NoSuchElementException:
+        d.find_element_by_id("Email").send_keys(getenv('GEMAIL'))
+        d.find_element_by_id("Email").send_keys(Keys.RETURN)
+        sleep(2)
+        d.find_element_by_id("Passwd").send_keys(getenv('GPASS'))
+        d.find_element_by_id("Passwd").send_keys(Keys.RETURN)
     sleep(2)
     assert "developers.google.com/oauthplayground" in d.current_url
