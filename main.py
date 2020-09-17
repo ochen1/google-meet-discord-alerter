@@ -22,6 +22,7 @@ app = Flask(__name__)
 auth = HTTPBasicAuth()
 
 users = loadsJSON(getenv("PASSWD"))
+admins = loadsJSON(getenv("ADMINS"))
 
 
 def runwarning(code):
@@ -106,8 +107,16 @@ Globals:\n{pformat(globals())}\n\
 @app.route('/force')
 @auth.login_required
 def forceCheck():
-    check()
-    return "OK!"
+    if auth.current_user() in admins:
+        check()
+        return "OK!"
+    else:
+        return "Denied."
+
+
+@app.route('/ping')
+def ping():
+    return "Pong!"
 
 
 if __name__ == "__main__":
