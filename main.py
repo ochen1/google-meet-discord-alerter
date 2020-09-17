@@ -122,8 +122,11 @@ Note: global variables \"users\" and \"admins\" have been excluded from the list
 @app.route('/logs')
 @auth.login_required
 def logs():
-    with open('logs.log') as f:
-        return Response(f.read(), content_type="text/plain")
+    try:
+        with open('logs.log') as f:
+            return Response(f.read(), content_type="text/plain")
+    except FileNotFoundError:
+        return Response('', content_type="text/plain")
 
 
 @app.route('/force')
