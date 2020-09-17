@@ -27,9 +27,10 @@ admins = loadsJSON(getenv("ADMINS"))
 scriptdir = dirname(abspath(__file__)).rstrip('/') + '/'
 
 
-def log(text):
+def log(*args):
     with open(scriptdir + "logs.log", 'a') as f:
-        f.write(text + "\n")
+        print(*args, file=f)
+    print(*args)
 
 
 def runwarning(code):
