@@ -4,12 +4,13 @@ from time import sleep
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
+from re import match
 
 
 def assertLogin(d: WebDriver):
     d.get("https://myaccount.google.com/")
     sleep(0.4)
-    if "myaccount.google.com" in d.current_url:
+    if match(r"^(http|https):\/\/(myaccount\.google\.com).*$", d.current_url):
         d.find_element_by_xpath(
             "/html/body/div[2]/header/div[2]/div[3]/div[1]/div/div/a").click()
         sleep(0.1)
