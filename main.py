@@ -25,6 +25,11 @@ users = loadsJSON(getenv("PASSWD"))
 admins = loadsJSON(getenv("ADMINS"))
 
 
+def log(text):
+    with open("logs.log", 'a') as f:
+        f.write(text + "\n")
+
+
 def runwarning(code):
     post(
         getenv('WEBHOOK'),
@@ -76,6 +81,7 @@ def check():
         print(code)
         ret = system(' '.join(["./test.py", code[1]]))
         print(ret)
+        log(repr([code, ret]))
         if ret == 0 and ret != out[i][0]:
             runwarning(code)
         out[i] = [ret, time()]
@@ -100,10 +106,24 @@ Up since: {up}\n\
 Uptime: {time() - up}\n\
 Codes: {repr(codes)}\n\
 Output: {', '.join(map(repr, out))}\n\
-Globals:\n{pformat(dict(filter(lambda li: li[0] != 'users' and li[0] != 'admins', globals().items())))}\n\
+"
+    return Response(s, content_type="text/plain")
+
+
+@app.route('/globals')
+@auth.login_required
+def globalsIndex():
+    s = f"Globals:\n{pformat(dict(filter(lambda li: li[0] != 'users' and li[0] != 'admins', globals().items())))}\n\
 Note: global variables \"users\" and \"admins\" have been excluded from the list for security reasons.\
 "
     return Response(s, content_type="text/plain")
+
+
+@app.route('/logs')
+@auth.login_required
+def logs():
+    with open('logs.log') as f:
+        return Response(f.read(), content_type="text/plain")
 
 
 @app.route('/force')
@@ -122,8 +142,9 @@ def ping():
 
 
 if __name__ == "__main__":
+    log("Start.")
     webThread = Thread(target=app.run, kwargs={
-        'host': "0.0.0.0", 
+        'host': "0.0.0.0",
         'port': getenv('PORT')
     })
     webThread.daemon = True
@@ -131,4 +152,5 @@ if __name__ == "__main__":
     while True:
         schedule.run_pending()
         sleep(1)
+    log("Exit.")
     sys.exit()
