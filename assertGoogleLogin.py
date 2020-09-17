@@ -52,7 +52,7 @@ if (document.querySelector('.OVnw0d') != null) {
         d.find_element_by_id("Email").send_keys(getenv('GEMAIL'))
         d.find_element_by_id("Email").send_keys(Keys.RETURN)
         sleep(2)
-        d.find_element_by_id("Passwd").send_keys(getenv('GPASS'))
-        d.find_element_by_id("Passwd").send_keys(Keys.RETURN)
+        d.find_element_by_id("password").send_keys(getenv('GPASS'))
+        d.find_element_by_id("password").send_keys(Keys.RETURN)
     sleep(2)
     assert "developers.google.com/oauthplayground" in d.current_url
