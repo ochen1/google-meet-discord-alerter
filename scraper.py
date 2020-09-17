@@ -19,7 +19,7 @@ def getNumPeople(mid):
     try:
         driver = webdriver.Chrome(
             executable_path=os.getenv('CHROMEDRIVER_PATH'),
-            chrome_options=chrome_options
+            options=chrome_options
         )
         try:
             assertLogin(driver)
