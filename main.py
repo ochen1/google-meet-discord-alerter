@@ -10,7 +10,6 @@ from time import gmtime, sleep, strftime, time
 from flask import Flask, Response
 from flask_httpauth import HTTPBasicAuth
 from requests import post
-from scraper import getNumPeople
 from werkzeug.security import check_password_hash
 
 codes = loadsJSON(getenv('CODES'))
@@ -67,7 +66,7 @@ def runwarning(code):
                     },
                     {
                         "name": ":hash: Meet Details",
-                        "value": "Number of people in the meet as of now: %s" % getNumPeople(code[1]),
+                        "value": "Number of people in the meet as of now: [subproject abandoned]",
                         "inline": False
                     },
                     {
