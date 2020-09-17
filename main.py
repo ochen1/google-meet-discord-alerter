@@ -2,6 +2,7 @@ import sys
 from itertools import repeat
 from json import loads as loadsJSON
 from os import getenv, system
+from os.path import abspath, dirname
 from pprint import pformat
 from threading import Thread
 from time import gmtime, sleep, strftime, time
@@ -24,9 +25,11 @@ auth = HTTPBasicAuth()
 users = loadsJSON(getenv("PASSWD"))
 admins = loadsJSON(getenv("ADMINS"))
 
+scriptdir = dirname(abspath(__file__)).rstrip('/') + '/'
+
 
 def log(text):
-    with open("logs.log", 'a') as f:
+    with open(scriptdir + "logs.log", 'a') as f:
         f.write(text + "\n")
 
 
@@ -79,7 +82,7 @@ def check():
     global out
     for i, code in enumerate(codes):
         print(code)
-        ret = system(' '.join(["./test.py", code[1]]))
+        ret = system(' '.join([scriptdir + "test.py", code[1]]))
         print(ret)
         log(repr([code, ret]))
         if ret == 0 and ret != out[i][0]:
@@ -94,6 +97,18 @@ schedule.every(1).minute.at(':00').do(check)
 def verify_password(username, password):
     if username in users and check_password_hash(users.get(username), password):
         return username
+
+
+@app.route('/index')
+def locateIndex():
+    return Response('\n'.join([
+        '/index',
+        '/',
+        '/globals',
+        '/logs',
+        '/force',
+        '/logs'
+    ]),content_type="text/plain")
 
 
 @app.route('/')
@@ -123,7 +138,7 @@ Note: global variables \"users\" and \"admins\" have been excluded from the list
 @auth.login_required
 def logs():
     try:
-        with open('logs.log') as f:
+        with open(scriptdir + 'logs.log') as f:
             return Response(f.read(), content_type="text/plain")
     except FileNotFoundError:
         return Response('', content_type="text/plain")
@@ -152,8 +167,12 @@ if __name__ == "__main__":
     })
     webThread.daemon = True
     webThread.start()
-    while True:
-        schedule.run_pending()
-        sleep(1)
-    log("Exit.")
-    sys.exit()
+    try:
+        while True:
+            schedule.run_pending()
+            sleep(1)
+    except KeyboardInterrupt:
+        print()
+    finally:
+        log("Stop.")
+        sys.exit()
