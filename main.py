@@ -93,13 +93,15 @@ def verify_password(username, password):
 @app.route('/')
 @auth.login_required
 def index():
-    s = f"Program is running.\n\
+    s = f"{sys.version}\n\
+Program is running.\n\
 Current Time: {time()}\n\
 Up since: {up}\n\
 Uptime: {time() - up}\n\
 Codes: {repr(codes)}\n\
 Output: {', '.join(map(repr, out))}\n\
-Globals:\n{pformat(globals())}\n\
+Globals:\n{pformat(dict(filter(lambda li: li[0] != 'users' and li[0] != 'admins', globals().items())))}\n\
+Note: global variables \"users\" and \"admins\" have been excluded from the list for security reasons.\
 "
     return Response(s, content_type="text/plain")
 
