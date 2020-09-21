@@ -29,8 +29,6 @@ scriptdir = dirname(abspath(__file__)).rstrip('/') + '/'
 
 
 def log(*args):
-    with open(scriptdir + "logs.log", 'a') as f:
-        print(*args, file=f)
     print(*args)
 
 
@@ -110,9 +108,7 @@ def locateIndex():
         '/index',
         '/',
         '/globals',
-        '/logs',
         '/force',
-        '/logs'
     ]), content_type="text/plain")
 
 
@@ -138,16 +134,6 @@ def globalsIndex():
 Note: global variables \"users\" and \"admins\" have been excluded from the list for security reasons.\
 "
     return Response(s, content_type="text/plain")
-
-
-@app.route('/logs')
-@auth.login_required
-def logs():
-    try:
-        with open(scriptdir + 'logs.log') as f:
-            return Response(f.read(), content_type="text/plain")
-    except FileNotFoundError:
-        return Response('', content_type="text/plain")
 
 
 @app.route('/force')
