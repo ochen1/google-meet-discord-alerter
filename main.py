@@ -38,10 +38,12 @@ def runwarning(code):
     post(
         getenv('WEBHOOK'),
         json={
-            'content': "<@&%s>\nDisclaimer: This Discord bot by Oliver Chen is provided \"AS IS\". Oliver makes no other warranties, expressive or implied, and hereby disclaims all implied warranties, including any warranty of merchantability and warranty of fitness for a particular purpose." % getenv("EVENT_PING_ID"),
+            'content': "<@&%s>\nDisclaimer: This Discord bot by Oliver Chen is provided \"AS IS\". Oliver makes no other warranties, expressive or implied, and hereby disclaims all implied warranties, including any warranty of merchantability and warranty of fitness for a particular purpose." % getenv(
+                "EVENT_PING_ID"),
             "embeds": [{
                 "title": "Google Meet started!",
-                "description": "A Google Meet for your class `%s` resolved!\nThis usually means a teacher has joined the meet!\nHurry and join in ASAP!" % code[0],
+                "description": "A Google Meet for your class `%s` resolved!\nThis usually means a teacher has joined the meet!\nHurry and join in ASAP!" %
+                               code[0],
                 "color": 8977942,
                 "timestamp": strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()),
                 "footer": {
@@ -56,12 +58,14 @@ def runwarning(code):
                 "fields": [
                     {
                         "name": "<:gclassroom:755519374277738536> Google Classroom",
-                        "value": "Click [<:gclassroom:755519374277738536> here](https://classroom.google.com/u/0/c/%s) to go to the event Classroom." % code[2],
+                        "value": "Click [<:gclassroom:755519374277738536> here](https://classroom.google.com/u/0/c/%s) to go to the event Classroom." %
+                                 code[2],
                         "inline": True
                     },
                     {
                         "name": "<:gmeet:755518059703435357> Google Meet",
-                        "value": "Click [<:gmeet:755518059703435357> here](https://meet.google.com/lookup/%s) to enter the meet." % code[1],
+                        "value": "Click [<:gmeet:755518059703435357> here](https://meet.google.com/lookup/%s) to enter the meet." %
+                                 code[1],
                         "inline": True
                     },
                     {
