@@ -14,12 +14,15 @@ from os import getenv
 
 code = sys.argv[1].lower()
 
+idtype = None
 dataformat = None
 if match(r"^([a-z]{3}-[a-z]{4}-[a-z]{3})$", code):
     # Meeting code provided
+    idtype = "MEETING_CODE"
     dataformat = "\n\x0c{0}\x30\x01"
 elif match(r"^([a-zA-Z0-9]+)$", code):
     # (likely) Lookup code provided
+    idtype = "LOOKUP_CODE"
     dataformat = "{0}\"\x02CA"
 else:
     raise ValueError("Unrecognized identifier.")
