@@ -70,6 +70,8 @@ def resolve_meeting_space(code):
         print(repr(r.status_code), repr(r.text))
         if r.status_code == 401 and "Request had invalid authentication credentials." in r.text:
             raise Exception("Authentication failed.")
+        if r.status_code == 403 and "The request is missing a valid API key." in r.text:
+            raise Exception("API key not valid.")
         if r.status_code == 400 and "Request contains an invalid argument." in r.text:
             raise Exception("Invalid argument.")
         exit(1)
