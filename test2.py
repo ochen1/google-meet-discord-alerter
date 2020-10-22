@@ -9,10 +9,21 @@
 import sys
 from requests import post
 from base64 import b64decode
-from re import findall
+from re import match, findall
 from os import getenv
 
 code = sys.argv[1].lower()
+
+dataformat = None
+if match(r"^([a-z]{3}-[a-z]{4}-[a-z]{3})$", code):
+    # Meeting code provided
+    dataformat = "\n\x0c{0}\x30\x01"
+elif match(r"^([a-zA-Z0-9]+)$", code):
+    # (likely) Lookup code provided
+    dataformat = "{0}\"\x02CA"
+else:
+    raise ValueError("Unrecognized identifier.")
+
 r = post(
     "https://meet.google.com/$rpc/google.rtc.meetings.v1.MeetingSpaceService/ResolveMeetingSpace",
     headers={
@@ -24,10 +35,7 @@ r = post(
         "x-goog-encode-response-if-executable": "base64",
         "x-origin": "https://meet.google.com"
     },
-    data=(
-             "\n\x0c%s\x30\x01" if '-' in code  # meeting code
-             else "%s\"\x02CA"  # lookup code
-         ) % code
+    data=dataformat.format(code)
 )
 
 if r.status_code != 200:
