@@ -43,18 +43,22 @@ print(ret)
         bytes.decode,
         tuple(
             findall(
-                r"^"
-                r".*?(spaces\/[A-Za-z0-9\\._]{12})"
-                r".*?([a-z]{3}-[a-z]{4}-[a-z]{3})"
-                r".*?(\$https?:\/\/(?:\w*\.)?meet\.google\.com\/[\^\-\\\]\_\.\~\!\*\'\(\)\;\:\@\&\=\+\$\,\/\?\%\#A-z0-9]*?)"
+                r"^"                                    # The beginning of the line
+                r".*?(spaces\/[A-Za-z0-9\\._]{12})"     # Group 1: The space code that uses base64
+                r".*?([a-z]{3}-[a-z]{4}-[a-z]{3})"      # Group 2: The Meet code, using the format xxx-xxxx-xxx
+                r".*?(\$"                               # Group 3: The resolved URL for the Meet (starts with $) 
+                r"https?:\/\/(?:\w*\.)?"                # Protocol and subdomain, if one exists
+                r"meet\.google\.com\/"                  # Hostname (domain), which must be meet.google.com
+                r"[\^\-\\\]\_\.\~\!\*\'\(\)\;\:\@\&\=\+\$\,\/\?\%\#A-z0-9]*?)" # Valid characters in URL path
                 r".*?$"
-                    .replace('.*?', '\x13', 1)
+                    .replace('.*?', '\x13', 1)          # Replace the .*s in the regex with the proper separators
                     .replace('.*?', '\x12\x0c', 1)
                     .replace('.*?', '\x1a', 1)
-                    .replace('.*?', '\x02\x08\x01', 1)
+                    .replace('.*?', '\x02\x08', 1)
                     .encode(),
                 ret[0]  # First line contains the spacecode, meetcode, and meeturl
-            )[0]  # use the one and only result
+                    .rstrip(b'\x01')  # Remove the end-of-message byte/character
+            )[0]    # Use the one and only result
         )
     )
 )
