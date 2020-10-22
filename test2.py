@@ -29,15 +29,13 @@ r = post(
              else "%s\"\x02CA"  # lookup code
          ) % code
 )
-print(r)
-print(r.status_code)
+
 if r.status_code != 200:
+    print(repr(r.status_code), repr(r.text))
     if r.status_code == 401 and "Request had invalid authentication credentials." in r.text:
         raise Exception("Authentication failed.")
     exit(1)
-print(r.text)
 ret = b64decode(r.text).strip().split(b'\n')
-print(ret)
 (spacecode, meetcode, meeturl) = tuple(
     map(
         bytes.decode,
@@ -62,7 +60,7 @@ print(ret)
         )
     )
 )
-print(spacecode, meetcode, meeturl)
+print(spacecode, meetcode, meeturl, sep='\n')
 if len(ret) >= 4:
     (lookupcode) = tuple(
         map(
