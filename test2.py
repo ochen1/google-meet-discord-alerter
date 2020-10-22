@@ -122,4 +122,5 @@ if __name__ == '__main__':
         print("Unable to validate lookup code.")
         exit(255)
     else:
-        resolve_meeting_space(code)
+        ret = resolve_meeting_space(code)
+        print(*filter(lambda item: item is not None, ret), sep='\n')
