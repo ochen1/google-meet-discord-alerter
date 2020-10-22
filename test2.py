@@ -138,7 +138,13 @@ def resolve_meeting_space(code):
                 )
             )
         )
-    return (spacecode, meetcode, meeturl, lookupcode)
+
+    gmeettoken = None
+    try:
+        gmeettoken = r.headers['x-goog-meeting-token']
+    except KeyError:
+        pass
+    return (spacecode, meetcode, meeturl, gmeettoken, lookupcode)
 
 
 if __name__ == '__main__':
@@ -151,5 +157,5 @@ if __name__ == '__main__':
         exit(255)
     else:
         ret = resolve_meeting_space(code)
-        (spacecode, meetcode, meeturl, lookupcode) = ret
+        (spacecode, meetcode, meeturl, gmeettoken, lookupcode) = ret
         print(*filter(lambda item: item is not None, ret), sep='\n')
