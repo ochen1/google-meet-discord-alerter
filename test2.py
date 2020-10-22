@@ -96,6 +96,8 @@ def resolve_meeting_space(code):
             raise Exception("API key not valid.")
         if r.status_code == 400 and "Request contains an invalid argument." in r.text:
             raise Exception("Invalid argument.")
+        if r.status_code == 403 and "The requester cannot resolve this meeting" in r.text:
+            exit(0)
         exit(1)
     ret = b64decode(r.text).strip().split(b'\n')
     (spacecode, meetcode, meeturl) = tuple(
