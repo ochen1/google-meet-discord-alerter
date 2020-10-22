@@ -118,9 +118,10 @@ if __name__ == '__main__':
         code = sys.argv[1].lower()
     except IndexError:
         exit(1)
-    if not validate_meeting_code(code):
+    if validate_meeting_code(code) is False:
         print("Unable to validate lookup code.")
         exit(255)
     else:
         ret = resolve_meeting_space(code)
+        (spacecode, meetcode, meeturl, lookupcode) = ret
         print(*filter(lambda item: item is not None, ret), sep='\n')
