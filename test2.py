@@ -41,7 +41,7 @@ def resolve_meeting_space(code):
             "x-goog-encode-response-if-executable": "base64",
             "x-origin": "https://meet.google.com"
         },
-        data=get_requestdata_template(code).format(code)
+        data=get_requestdata_template(code)[1].format(code)
     )
 
     if r.status_code != 200:
