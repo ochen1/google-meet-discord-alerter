@@ -90,3 +90,6 @@ def resolve_meeting_space(code):
             )
         )
         print(lookupcode)
+
+if __name__ == '__main__':
+    resolve_meeting_space(sys.argv[1].lower())
