@@ -12,6 +12,27 @@ from urllib.parse import urlparse
 from base64 import b64decode
 from re import match, findall
 from os import getenv
+from time import time
+from http.cookies import SimpleCookie
+from hashlib import sha1
+
+
+def generate_sapisidhash():
+    cookie = SimpleCookie()
+    cookie.load(getenv('COOKIE'))
+    cookie = dict(cookie.items())
+    t = str(int(time()))
+    return ' '.join([
+        "SAPISIDHASH",
+        '_'.join([
+            t,
+            sha1(' '.join([
+                t,
+                cookie['SAPISID'].coded_value,
+                'https://meet.google.com'
+            ]).encode()).hexdigest()
+        ])
+    ])
 
 
 def get_requestdata_template(code):
@@ -20,7 +41,7 @@ def get_requestdata_template(code):
     if match(r"^([a-z]{3}-[a-z]{4}-[a-z]{3})$", code):
         # Meeting code provided
         idtype = "MEETING_CODE"
-        dataformat = "\n\x0c{0}2\x01"   # Type 2: ength-delimited
+        dataformat = "\n\x0c{0}\x30\x01"
         # Protocol Buffers: https://developers.google.com/protocol-buffers/docs/encoding
     elif match(r"^([a-zA-Z0-9]+)$", code):
         # (likely) Lookup code provided
@@ -52,12 +73,13 @@ def validate_meeting_code(code):
 
 
 def resolve_meeting_space(code):
+    # print(repr(get_requestdata_template(code)[1].format(code)))
     r = post(
         "https://meet.google.com/$rpc/google.rtc.meetings.v1.MeetingSpaceService/ResolveMeetingSpace",
         headers={
             "content-type": "application/x-protobuf",
             "cookie": getenv('COOKIE'),
-            "authorization": getenv('GAPIAUTH'),
+            "authorization": generate_sapisidhash(),
             "x-goog-api-key": getenv('GAPIKEY'),
             "x-goog-authuser": getenv('COOKIE_AUTHUSER'),
             "x-goog-encode-response-if-executable": "base64",
