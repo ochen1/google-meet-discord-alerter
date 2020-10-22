@@ -12,20 +12,22 @@ from base64 import b64decode
 from re import match, findall
 from os import getenv
 
-code = sys.argv[1].lower()
 
-idtype = None
-dataformat = None
-if match(r"^([a-z]{3}-[a-z]{4}-[a-z]{3})$", code):
-    # Meeting code provided
-    idtype = "MEETING_CODE"
-    dataformat = "\n\x0c{0}\x30\x01"
-elif match(r"^([a-zA-Z0-9]+)$", code):
-    # (likely) Lookup code provided
-    idtype = "LOOKUP_CODE"
-    dataformat = "{0}\"\x02CA"
-else:
-    raise ValueError("Unrecognized identifier.")
+def get_requestdata_template(code):
+    idtype = None
+    dataformat = None
+    if match(r"^([a-z]{3}-[a-z]{4}-[a-z]{3})$", code):
+        # Meeting code provided
+        idtype = "MEETING_CODE"
+        dataformat = "\n\x0c{0}\x30\x01"
+    elif match(r"^([a-zA-Z0-9]+)$", code):
+        # (likely) Lookup code provided
+        idtype = "LOOKUP_CODE"
+        dataformat = "{0}\"\x02CA"
+    else:
+        raise ValueError("Unrecognized identifier.")
+    return idtype, dataformat
+
 
 def resolve_meeting_space(code):
     r = post(
@@ -39,7 +41,7 @@ def resolve_meeting_space(code):
             "x-goog-encode-response-if-executable": "base64",
             "x-origin": "https://meet.google.com"
         },
-        data=dataformat.format(code)
+        data=get_requestdata_template(code).format(code)
     )
 
     if r.status_code != 200:
