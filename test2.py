@@ -97,7 +97,7 @@ def resolve_meeting_space(code):
             )
         )
     )
-    print(spacecode, meetcode, meeturl, sep='\n')
+    lookupcode = None
     if len(ret) >= 4:
         (lookupcode) = tuple(
             map(
@@ -110,7 +110,7 @@ def resolve_meeting_space(code):
                 )
             )
         )
-        print(lookupcode)
+    return (spacecode, meetcode, meeturl, lookupcode)
 
 
 if __name__ == '__main__':
