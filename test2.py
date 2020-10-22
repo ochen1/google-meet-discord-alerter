@@ -7,7 +7,8 @@
 # Since: 2020-10-01T00:00Z
 
 import sys
-from requests import post
+from requests import get, post
+from urllib.parse import urlparse
 from base64 import b64decode
 from re import match, findall
 from os import getenv
@@ -27,6 +28,26 @@ def get_requestdata_template(code):
     else:
         raise ValueError("Unrecognized identifier.")
     return idtype, dataformat
+
+
+def validate_meeting_code(code):
+    idtype = get_requestdata_template(code)[0]
+    if idtype != "LOOKUP_CODE":
+        return
+    r = get(
+        "https://meet.google.com/lookup/%s?authuser=%s" % (code, getenv('COOKIE_AUTHUSER')),
+        headers={
+            "Cookie": getenv('COOKIE'),
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
+        },
+        allow_redirects=False
+    )
+    if r.status_code != 302:
+        raise Exception("Meeting code validation returned unexpected %s status code." % r.status_code)
+    if urlparse(r.headers['Location']).path.split('/')[1:3] == ['_meet', 'whoops']:
+        return False
+    else:
+        return True
 
 
 def resolve_meeting_space(code):
@@ -91,5 +112,14 @@ def resolve_meeting_space(code):
         )
         print(lookupcode)
 
+
 if __name__ == '__main__':
-    resolve_meeting_space(sys.argv[1].lower())
+    try:
+        code = sys.argv[1].lower()
+    except IndexError:
+        exit(1)
+    if not validate_meeting_code(code):
+        print("Unable to validate lookup code.")
+        exit(255)
+    else:
+        resolve_meeting_space(code)
