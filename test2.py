@@ -25,8 +25,8 @@ r = post(
         "x-origin": "https://meet.google.com"
     },
     data=(
-             "\n%s0" if '-' in code  # meeting code
-             else "%s\"CA"  # lookup code
+             "\n\x0c%s\x30\x01" if '-' in code  # meeting code
+             else "%s\"\x02CA"  # lookup code
          ) % code
 )
 print(r)
