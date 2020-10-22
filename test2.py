@@ -34,6 +34,8 @@ if r.status_code != 200:
     print(repr(r.status_code), repr(r.text))
     if r.status_code == 401 and "Request had invalid authentication credentials." in r.text:
         raise Exception("Authentication failed.")
+    if r.status_code == 400 and "Request contains an invalid argument." in r.text:
+        raise Exception("Invalid argument.")
     exit(1)
 ret = b64decode(r.text).strip().split(b'\n')
 (spacecode, meetcode, meeturl) = tuple(
