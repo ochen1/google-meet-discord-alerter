@@ -38,7 +38,7 @@ def validate_meeting_code(code):
         "https://meet.google.com/lookup/%s?authuser=%s" % (code, getenv('COOKIE_AUTHUSER')),
         headers={
             "cookie": getenv('COOKIE'),
-            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
+            "user-agent": getenv("USERAGENT")
         },
         allow_redirects=False
     )
