@@ -20,7 +20,8 @@ def get_requestdata_template(code):
     if match(r"^([a-z]{3}-[a-z]{4}-[a-z]{3})$", code):
         # Meeting code provided
         idtype = "MEETING_CODE"
-        dataformat = "\n\x0c{0}\x30\x01"
+        dataformat = "\n\x0c{0}2\x01"   # Type 2: ength-delimited
+        # Protocol Buffers: https://developers.google.com/protocol-buffers/docs/encoding
     elif match(r"^([a-zA-Z0-9]+)$", code):
         # (likely) Lookup code provided
         idtype = "LOOKUP_CODE"
