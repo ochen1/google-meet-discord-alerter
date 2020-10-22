@@ -37,8 +37,8 @@ def validate_meeting_code(code):
     r = get(
         "https://meet.google.com/lookup/%s?authuser=%s" % (code, getenv('COOKIE_AUTHUSER')),
         headers={
-            "Cookie": getenv('COOKIE'),
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
+            "cookie": getenv('COOKIE'),
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
         },
         allow_redirects=False
     )
@@ -55,7 +55,7 @@ def resolve_meeting_space(code):
         "https://meet.google.com/$rpc/google.rtc.meetings.v1.MeetingSpaceService/ResolveMeetingSpace",
         headers={
             "content-type": "application/x-protobuf",
-            "Cookie": getenv('COOKIE'),
+            "cookie": getenv('COOKIE'),
             "authorization": getenv('GAPIAUTH'),
             "x-goog-api-key": getenv('GAPIKEY'),
             "x-goog-authuser": getenv('COOKIE_AUTHUSER'),
