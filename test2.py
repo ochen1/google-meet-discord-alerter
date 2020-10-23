@@ -146,7 +146,6 @@ def resolve_meeting_space(code):
         raise RequestError("Unknown error.", rl, rh, rd, r)
 
     ret = b64decode(r.text).strip().split(b'\n')
-    print(b64decode(r.text))
     (spacecode, meetcode, meeturl) = tuple(
         map(
             bytes.decode,
