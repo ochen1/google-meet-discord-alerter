@@ -156,7 +156,7 @@ def resolve_meeting_space(code):
                     r".*?(\$"                               # Group 3: The resolved URL for the Meet (starts with $) 
                     r"https?:\/\/(?:\w*\.)?"                # Protocol and subdomain, if one exists
                     r"meet\.google\.com\/"                  # Hostname (domain), which must be meet.google.com
-                    r"[\^\-\\\]\_\.\~\!\*\'\(\)\;\:\@\&\=\+\$\,\/\?\%\#A-z0-9]*?)" # Valid characters in URL path
+                    r"[\^\-\\\]\_\.\~\!\*\'\(\)\;\:\@\&\=\+\$\,\/\?\%\#A-z0-9]*?)"  # Valid characters in URL path
                     r".*?$"
                         .replace('.*?', '\x13', 1)          # Replace the .*s in the regex with the proper separators
                         .replace('.*?', '\x12\x0c', 1)
@@ -165,7 +165,7 @@ def resolve_meeting_space(code):
                         .encode(),
                     ret[0]  # First line contains the spacecode, meetcode, and meeturl
                         .rstrip(b'\x01')  # Remove the end-of-message byte/character
-                )[0]    # Use the one and only result
+                )[0]  # Use the one and only result
             )
         )
     )
