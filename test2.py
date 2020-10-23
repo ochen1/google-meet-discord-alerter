@@ -48,7 +48,8 @@ def get_requestdata_template(code):
         idtype = "LOOKUP_CODE"
         dataformat = "{0}\"\x02CA"
     else:
-        raise ValueError("Unrecognized identifier.")
+        print("Unrecognized identifier.")
+        exit(128)
     return idtype, dataformat
 
 
