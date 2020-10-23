@@ -73,7 +73,8 @@ def get_requestdata_template(code):
     if match(r"^([a-z]{3}-[a-z]{4}-[a-z]{3})$", code):
         # Meeting code provided
         idtype = "MEETING_CODE"
-        dataformat = "\n\x0ca{0}\x30\x01"
+        # dataformat = "\n\x0ca{0}\x30\x01"
+        dataformat = "\n\x0c{0}\x30\x01"
         # Protocol Buffers: https://developers.google.com/protocol-buffers/docs/encoding
     elif match(r"^([a-zA-Z0-9]+)$", code):
         # (likely) Lookup code provided
@@ -145,6 +146,7 @@ def resolve_meeting_space(code):
         raise RequestError("Unknown error.", rl, rh, rd, r)
 
     ret = b64decode(r.text).strip().split(b'\n')
+    print(b64decode(r.text))
     (spacecode, meetcode, meeturl) = tuple(
         map(
             bytes.decode,
