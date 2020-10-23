@@ -99,6 +99,9 @@ def resolve_meeting_space(code):
         if r.status_code == 400 and "The conference is gone" in r.text:
             print("Meeting space ended.")
             exit(8)
+        if r.status_code == 404 and "Requested meeting space does not exist." in r.text:
+            print("No such meeting space.")
+            exit(128)
         if r.status_code == 403 and "The requester cannot resolve this meeting" in r.text:
             exit(0)
         raise Exception()
