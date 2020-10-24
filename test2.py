@@ -24,8 +24,9 @@ from os import getenv
 from time import time
 from http.cookies import SimpleCookie
 from hashlib import sha1
-from blackboxprotobuf import protobuf_to_json
+from blackboxprotobuf import protobuf_to_json, protobuf_from_json
 from json import loads as loadsJSON
+from json import dumps as dumpsJSON
 
 
 class RequestError(Exception):
@@ -69,27 +70,45 @@ def generate_sapisidhash():
     ])
 
 
-def get_requestdata_template(code):
-    idtype = None
-    dataformat = None
+def get_idtype(code):
     if match(r"^([a-z]{3}-[a-z]{4}-[a-z]{3})$", code):
         # Meeting code provided
-        idtype = "MEETING_CODE"
-        # dataformat = "\n\x0ca{0}\x30\x01"
-        dataformat = "\n\x0c{0}\x30\x01"
-        # Protocol Buffers: https://developers.google.com/protocol-buffers/docs/encoding
+        return "MEETING_CODE"
     elif match(r"^([a-zA-Z0-9]+)$", code):
         # (likely) Lookup code provided
-        idtype = "LOOKUP_CODE"
-        dataformat = "{0}\"\x02CA"
+        return "LOOKUP_CODE"
     else:
         print("Unrecognized identifier.")
         exit(128)
-    return idtype, dataformat
+
+
+def format_requestdata(code):
+    idtype = get_idtype(code)
+    data = None
+    if idtype == "MEETING_CODE":
+        data = protobuf_from_json(
+            dumpsJSON({
+                '1': code,
+                '6': 1
+            }),
+            {
+                '1': {
+                    'type': 'bytes',
+                    'name': ''
+                },
+                '6': {
+                    'type': 'int',
+                    'name': ''
+                }
+            }
+        )
+    elif idtype == "LOOKUP_CODE":
+        data = "{0}\"\x02CA".format(code)  # TODO
+    return data
 
 
 def validate_meeting_code(code):
-    idtype = get_requestdata_template(code)[0]
+    idtype = get_idtype(code)
     if idtype != "LOOKUP_CODE":
         return
     rl = "https://meet.google.com/lookup/%s?authuser=%s" % (code, getenv('COOKIE_AUTHUSER'))
@@ -122,7 +141,7 @@ def resolve_meeting_space(code):
         "x-goog-encode-response-if-executable": "base64",
         "x-origin": "https://meet.google.com"
     }
-    rd = get_requestdata_template(code)[1].format(code)
+    rd = format_requestdata(code)
     r = post(
         rl,
         headers=rh,
@@ -158,7 +177,7 @@ def resolve_meeting_space(code):
     spacecode = p['1']
     meetcode = p['2']
     meeturl = p['3']
-    lookupcode = None   # TODO
+    lookupcode = None  # TODO
 
     gmeettoken = None
     try:
