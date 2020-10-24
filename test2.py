@@ -24,6 +24,8 @@ from os import getenv
 from time import time
 from http.cookies import SimpleCookie
 from hashlib import sha1
+from blackboxprotobuf import protobuf_to_json
+from json import loads as loadsJSON
 
 
 class RequestError(Exception):
@@ -145,44 +147,18 @@ def resolve_meeting_space(code):
             exit(9)
         raise RequestError("Unknown error.", rl, rh, rd, r)
 
-    ret = b64decode(r.text).strip().split(b'\n')
-    (spacecode, meetcode, meeturl) = tuple(
-        map(
-            bytes.decode,
-            tuple(
-                findall(
-                    r"^"                                    # The beginning of the line
-                    r".*?(spaces\/[A-Za-z0-9\\._]{12})"     # Group 1: The space code that uses base64
-                    r".*?([a-z]{3}-[a-z]{4}-[a-z]{3})"      # Group 2: The Meet code, using the format xxx-xxxx-xxx
-                    r".*?(\$"                               # Group 3: The resolved URL for the Meet (starts with $) 
-                    r"https?:\/\/(?:\w*\.)?"                # Protocol and subdomain, if one exists
-                    r"meet\.google\.com\/"                  # Hostname (domain), which must be meet.google.com
-                    r"[\^\-\\\]\_\.\~\!\*\'\(\)\;\:\@\&\=\+\$\,\/\?\%\#A-z0-9]*?)"  # Valid characters in URL path
-                    r".*?$"
-                        .replace('.*?', '\x13', 1)          # Replace the .*s in the regex with the proper separators
-                        .replace('.*?', '\x12\x0c', 1)
-                        .replace('.*?', '\x1a', 1)
-                        .replace('.*?', '\x02\x08', 1)
-                        .encode(),
-                    ret[0]  # First line contains the spacecode, meetcode, and meeturl
-                        .rstrip(b'\x01')  # Remove the end-of-message byte/character
-                )[0]  # Use the one and only result
-            )
+    p = protobuf_to_json(b64decode(r.text))
+    if getenv("PROTOBUF_DEBUG_LOG_ENDPOINT") is not None:
+        post(
+            getenv("PROTOBUF_DEBUG_LOG_ENDPOINT"),
+            json={"content": "```\n{}\n```\n```json\n{}\n```".format(r.text, p[0])}
         )
-    )
-    lookupcode = None
-    if len(ret) >= 4:
-        (lookupcode) = tuple(
-            map(
-                bytes.decode,
-                tuple(
-                    findall(
-                        b"^(.+)\x00$",
-                        ret[3]
-                    )
-                )
-            )
-        )
+
+    p = loadsJSON(p[0])
+    spacecode = p['1']
+    meetcode = p['2']
+    meeturl = p['3']
+    lookupcode = None   # TODO
 
     gmeettoken = None
     try:
