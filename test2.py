@@ -19,7 +19,7 @@ import sys
 from requests import get, post
 from urllib.parse import urlparse
 from base64 import b64decode
-from re import match, findall
+from re import match
 from os import getenv
 from time import time
 from http.cookies import SimpleCookie
@@ -70,11 +70,11 @@ def generate_sapisidhash():
     ])
 
 
-def get_idtype(code):
-    if match(r"^([a-z]{3}-[a-z]{4}-[a-z]{3})$", code):
+def get_idtype(idcode):
+    if match(r"^([a-z]{3}-[a-z]{4}-[a-z]{3})$", idcode):
         # Meeting code provided
         return "MEETING_CODE"
-    elif match(r"^([a-zA-Z0-9]+)$", code):
+    elif match(r"^([a-zA-Z0-9]+)$", idcode):
         # (likely) Lookup code provided
         return "LOOKUP_CODE"
     else:
@@ -82,36 +82,11 @@ def get_idtype(code):
         exit(128)
 
 
-def format_requestdata(code):
-    idtype = get_idtype(code)
-    data = None
-    if idtype == "MEETING_CODE":
-        data = protobuf_from_json(
-            dumpsJSON({
-                '1': code,
-                '6': 1
-            }),
-            {
-                '1': {
-                    'type': 'bytes',
-                    'name': ''
-                },
-                '6': {
-                    'type': 'int',
-                    'name': ''
-                }
-            }
-        )
-    elif idtype == "LOOKUP_CODE":
-        data = "{0}\"\x02CA".format(code)  # TODO
-    return data
-
-
-def validate_meeting_code(code):
-    idtype = get_idtype(code)
+def validate_meeting_code(meetcode):
+    idtype = get_idtype(meetcode)
     if idtype != "LOOKUP_CODE":
         return
-    rl = "https://meet.google.com/lookup/%s?authuser=%s" % (code, getenv('COOKIE_AUTHUSER'))
+    rl = "https://meet.google.com/lookup/%s?authuser=%s" % (meetcode, getenv('COOKIE_AUTHUSER'))
     rh = {
         "cookie": getenv('COOKIE'),
         "user-agent": getenv("CLIENT_USER_AGENT")
@@ -126,10 +101,10 @@ def validate_meeting_code(code):
     if urlparse(r.headers['Location']).path.split('/')[1:3] == ['_meet', 'whoops']:
         return False
     else:
-        return True
+        return urlparse(r.headers['Location']).path.lstrip('/')
 
 
-def resolve_meeting_space(code):
+def resolve_meeting_code(meetcode):
     # print(repr(get_requestdata_template(code)[1].format(code)))
     rl = "https://meet.google.com/$rpc/google.rtc.meetings.v1.MeetingSpaceService/ResolveMeetingSpace"
     rh = {
@@ -141,7 +116,22 @@ def resolve_meeting_space(code):
         "x-goog-encode-response-if-executable": "base64",
         "x-origin": "https://meet.google.com"
     }
-    rd = format_requestdata(code)
+    rd = protobuf_from_json(
+        dumpsJSON({
+            '1': meetcode,
+            '6': 1
+        }),
+        {
+            '1': {
+                'type': 'bytes',
+                'name': ''
+            },
+            '6': {
+                'type': 'int',
+                'name': ''
+            }
+        }
+    )
     r = post(
         rl,
         headers=rh,
@@ -193,10 +183,13 @@ if __name__ == '__main__':
     except IndexError:
         print("No meeting identifier passed to script.")
         exit(128)
-    if validate_meeting_code(code) is False:
+    idtype = get_idtype(code)
+    if idtype == 'LOOKUP_CODE':
+        code = validate_meeting_code(code)
+        print(code)
+    if code is False:
         print("Unable to validate lookup code.")
         exit(6)
-    else:
-        ret = resolve_meeting_space(code)
-        (spacecode, meetcode, meeturl, gmeettoken, lookupcode) = ret
-        print(*filter(lambda item: item is not None, ret), sep='\n')
+    ret = resolve_meeting_code(code)
+    (spacecode, meetcode, meeturl, gmeettoken, lookupcode) = ret
+    print(*filter(lambda item: item is not None, ret), sep='\n')
