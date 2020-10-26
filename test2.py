@@ -164,16 +164,13 @@ def resolve_meeting_code(meetcode):
         )
 
     p = loadsJSON(p[0])
+
     spacecode = p['1']
     meetcode = p['2']
     meeturl = p['3']
-    lookupcode = None  # TODO
+    lookupcode = p.get('7', None)
+    gmeettoken = r.headers.get('x-goog-meeting-token', None)
 
-    gmeettoken = None
-    try:
-        gmeettoken = r.headers['x-goog-meeting-token']
-    except KeyError:
-        pass
     return (spacecode, meetcode, meeturl, gmeettoken, lookupcode)
 
 
