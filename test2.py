@@ -98,10 +98,15 @@ def validate_meeting_code(meetcode):
     )
     if r.status_code != 302:
         raise RequestError("Meeting code validation returned unexpected %s status code." % r.status_code, rl, rh, '', r)
-    if urlparse(r.headers['Location']).path.split('/')[1:3] == ['_meet', 'whoops']:
+    redirect = urlparse(r.headers['Location'])
+    if redirect.hostname == 'accounts.google.com' and redirect.path.lstrip('/') == 'AccountChooser':
+        raise Exception('Cookies bad format: lookup resolution request got redirected to account chooser.')
+    if redirect.hostname != 'meet.google.com':
+        raise Exception('Lookup resolution request got redirected to unknown domain %s.' % redirect.hostname)
+    if redirect.path.split('/')[1:3] == ['_meet', 'whoops']:
         return False
     else:
-        return urlparse(r.headers['Location']).path.lstrip('/')
+        return redirect.path.lstrip('/')
 
 
 def resolve_meeting_code(meetcode):
