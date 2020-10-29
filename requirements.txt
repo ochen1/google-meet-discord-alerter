@@ -2,3 +2,4 @@ flask
 flask_httpauth
 requests
 werkzeug
+blackboxprotobuf
