@@ -1,7 +1,7 @@
 import sys
 from itertools import repeat
 from json import loads as loadsJSON
-from os import getenv, system
+from os import getenv, popen, WEXITSTATUS
 from os.path import abspath, dirname
 from pprint import pformat
 from threading import Thread
@@ -28,11 +28,17 @@ skip = loadsJSON(getenv("SKIP"))
 scriptdir = dirname(abspath(__file__)).rstrip('/') + '/'
 
 
-def log(*args):
-    print(*args)
-
-
-def runwarning(code):
+def runwarning(parsed):
+    meetcode = parsed.get('meetcode')
+    if meetcode:
+        meetcode = meetcode.split('-')
+        meetcode[1] = ''.join(repeat('\\*', len(meetcode[1])))
+        meetcode = '-'.join(meetcode)
+    meetcode = str(meetcode)
+    meetingspace = str(parsed.get('spacecode').split('/')[1])
+    meetingspacelen = len(meetingspace)
+    meetingspace = meetingspace[0:meetingspacelen // 2] + \
+                   ''.join(repeat('\\*', meetingspacelen - (meetingspacelen // 2)))
     post(
         getenv('WEBHOOK'),
         json={
@@ -41,7 +47,7 @@ def runwarning(code):
             "embeds": [{
                 "title": "Google Meet started!",
                 "description": "A Google Meet for your class `%s` resolved!\nThis usually means a teacher has joined the meet!\nHurry and join in ASAP!" %
-                               code[0],
+                               parsed['classname'],
                 "color": 8977942,
                 "timestamp": strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()),
                 "footer": {
@@ -57,13 +63,44 @@ def runwarning(code):
                     {
                         "name": "<:gclassroom:755519374277738536> Google Classroom",
                         "value": "Click [<:gclassroom:755519374277738536> here](https://classroom.google.com/u/0/c/%s) to go to the event Classroom." %
-                                 code[2],
-                        "inline": True
+                                 parsed['classcode'],
+                        "inline": False
                     },
                     {
                         "name": "<:gmeet:755518059703435357> Google Meet",
-                        "value": "Click [<:gmeet:755518059703435357> here](https://meet.google.com/lookup/%s) to enter the meet." %
-                                 code[1],
+                        "value": "Click [<:gmeet:755518059703435357> here](https://meet.google.com/%s%s) to enter the meet." %
+                                 ('lookup/' if '-' not in parsed['input'] else '', parsed['input']),
+                        "inline": False
+                    },
+                    {
+                        "name": ":school: Organization",
+                        "value": parsed.get('organization', 'none'),
+                        "inline": True
+                    },
+                    {
+                        "name": ":1234: Max Meet Size",
+                        "value": parsed.get('maxmeetsize', 'none'),
+                        "inline": True
+                    },
+                    {
+                        "name": "\u200B",
+                        "value": "\u200B",
+                        "inline": False
+                    },
+                    {
+                        "name": ":technologist: Developer Info",
+                        "value": "Fields below this one should be used with caution, if used at all.\n"
+                                 "The intention of these fields is to help developers debug their code.",
+                        "inline": False
+                    },
+                    {
+                        "name": ":spy: Verify Your Meet",
+                        "value": "The meeting code we've resolved for this code is: %s" % meetcode,
+                        "inline": True
+                    },
+                    {
+                        "name": ":spy: Verify Your Meeting Space",
+                        "value": "The meeting space we've resolved for this code is: spaces/%s" % meetingspace,
                         "inline": True
                     },
                     {
@@ -73,7 +110,7 @@ def runwarning(code):
                     },
                     {
                         "name": "Want to contribute?",
-                        "value": "[Report an issue/suggestion](https://raw.githack.com/ochen1/google-meet-discord-alerter/master/docs/ticket.html) or email o.chen1@share.epsb.ca to help develop!"
+                        "value": "[Report an issue/suggestion](https://ochen1.github.io/google-meet-discord-alerter/ticket.html) or email o.chen1@share.epsb.ca to help develop!"
                     }
                 ]
             }]
@@ -87,12 +124,37 @@ def check():
         return
     global out
     for i, code in enumerate(codes):
-        print(code)
-        ret = system(' '.join(["python3", scriptdir + "test.py", code[1]]))
-        print(ret)
-        log(repr([code, ret]))
+        print('Testing:', code, sep='\t')
+        rf = popen(' '.join(["python3", scriptdir + "test2.py", code[1]]))
+        rc = rf.read()
+        print(rc)
+        ret = rf.close()
+        ret = 0 if not ret else WEXITSTATUS(ret)
+
+        if getenv("TEST2_DEBUG_LOG_ENDPOINT") is not None:
+            post(
+                getenv("TEST2_DEBUG_LOG_ENDPOINT"),
+                json={
+                    "content": "`{}`\n```\n{}\n```".format(
+                        ' - '.join([str(i), "{0} ({2}) - {1}".format(*code), str(ret)]), rc)
+                }
+            )
+
+        serialized = dict(map(lambda line: tuple(line.split(':\t', 1)), rc.strip().split('\n')))
+        serialized['retcode'] = ret
+        serialized['classname'] = code[0]
+        serialized['classcode'] = code[1]
+        serialized['input'] = code[2]
+        print(repr(serialized))
         if ret == 0 and ret != out[i][0]:
-            runwarning(code)
+            runwarning(serialized)
+        if ret != out[i][0] and out[i][0] is not None:
+            post(
+                getenv('WEBHOOK'),
+                json={
+                    'content': "It looks like the ** :gmeet: Google Meet** just ended! :tada:"
+                }
+            )
         out[i] = [ret, time()]
 
 
@@ -152,7 +214,7 @@ def ping():
 
 
 if __name__ == "__main__":
-    log("Start.")
+    print("Start.")
     webThread = Thread(target=app.run, kwargs={
         'host': "0.0.0.0",
         'port': getenv('PORT')
@@ -166,5 +228,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print()
     finally:
-        log("Stop.")
+        print("Stop.")
         sys.exit()
