@@ -29,6 +29,9 @@ from json import loads as loadsJSON
 from json import dumps as dumpsJSON
 
 
+SERIALIZATION_DELIM = ':\t'
+
+
 class RequestError(Exception):
     def __init__(self, msg, rl, rh, rd, r):
         self.msg = msg
@@ -78,8 +81,8 @@ def get_idtype(idcode):
         # (likely) Lookup code provided
         return "LOOKUP_CODE"
     else:
-        print("Unrecognized identifier.")
-        exit(128)
+        print(SERIALIZATION_DELIM.join(('error', "Unrecognized identifier.",)))
+        exit(1)
 
 
 def validate_meeting_code(meetcode):
@@ -152,10 +155,10 @@ def resolve_meeting_code(meetcode):
         if r.status_code == 400 and "Request contains an invalid argument." in r.text:
             raise RequestError("Invalid argument during request.", rl, rh, rd, r)
         if r.status_code == 400 and "The conference is gone" in r.text:
-            print("Meeting space ended.")
+            print(SERIALIZATION_DELIM.join(('result', "Meeting space ended.",)))
             exit(8)
         if r.status_code == 404 and "Requested meeting space does not exist." in r.text:
-            print("No such meeting code.")
+            print(SERIALIZATION_DELIM.join(('result', "No such meeting code.",)))
             exit(7)
         if r.status_code == 403 and "The requester cannot resolve this meeting" in r.text:
             exit(9)
@@ -176,22 +179,32 @@ def resolve_meeting_code(meetcode):
     lookupcode = p.get('7', None)
     gmeettoken = r.headers.get('x-goog-meeting-token', None)
 
-    return (spacecode, meetcode, meeturl, gmeettoken, lookupcode)
+    details = p.get('6')
+    organization = None
+    maxparticipants = None
+    if details:
+        organization = details.get('4')
+        maxparticipants = details.get('6')
+
+    return (spacecode, meetcode, meeturl, gmeettoken, lookupcode, organization, maxparticipants)
 
 
 if __name__ == '__main__':
     try:
         code = sys.argv[1].lower()
     except IndexError:
-        print("No meeting identifier passed to script.")
+        print(SERIALIZATION_DELIM.join(('error', "No meeting identifier passed to script.",)))
         exit(128)
     idtype = get_idtype(code)
     if idtype == 'LOOKUP_CODE':
         code = validate_meeting_code(code)
-        print(code)
     if code is False:
-        print("Unable to validate lookup code.")
+        print(SERIALIZATION_DELIM.join(('result', "Unable to validate lookup code.",)))
         exit(6)
+    else:
+        print(SERIALIZATION_DELIM.join(('resolved', code,)))
     ret = resolve_meeting_code(code)
-    (spacecode, meetcode, meeturl, gmeettoken, lookupcode) = ret
-    print(*filter(lambda item: item is not None, ret), sep='\n')
+    ret = zip(('spacecode', 'meetcode', 'meeturl', 'gmeettoken', 'lookupcode', 'organization', 'maxmeetsize',), ret)
+    for field, value in ret:
+        if value is not None:
+            print(SERIALIZATION_DELIM.join((field, value,)))
