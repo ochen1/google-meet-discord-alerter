@@ -70,7 +70,7 @@ def runwarning(parsed):
                     {
                         "name": "<:gmeet:755518059703435357> Google Meet",
                         "value": "Click [<:gmeet:755518059703435357> here](https://meet.google.com/%s%s) to enter the meet." %
-                                 ('lookup/' if '-' not in parsed['input'] else '', parsed['input']),
+                                 ('lookup/' if '-' not in parsed['input'] else '_meet', parsed['input']),
                         "inline": False
                     },
                     {
