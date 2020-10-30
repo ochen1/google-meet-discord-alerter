@@ -1,4 +1,5 @@
 import sys
+from datetime import timedelta
 from itertools import repeat
 from json import loads as loadsJSON
 from os import getenv, popen, WEXITSTATUS
@@ -177,15 +178,15 @@ def locateIndex():
 @app.route('/')
 @auth.login_required
 def index():
-    s = f"{sys.version}\n\
-Program is running.\n\
-Current Time: {time()}\n\
-Current Time: {strftime('%Y-%m-%d %H:%M:%S %Z', gmtime())}\n\
-Up since: {up}\n\
-Uptime: {time() - up}\n\
-Codes: {repr(codes)}\n\
-Output: {', '.join(map(repr, out))}\n\
-"
+    s = f"""{sys.version}
+Program is running.
+Current Time: {time()}
+Current Time: {strftime('%Y-%m-%d %H:%M:%S %Z', gmtime())}
+Up since: {strftime('%Y-%m-%d %H:%M:%S %Z', gmtime(up))} ({up})
+Uptime: {str(timedelta(seconds=round(time() - up, 2)))}
+Codes: {repr(codes)}
+Output: {', '.join(map(repr, out))}
+"""
     return Response(s, content_type="text/plain")
 
 
