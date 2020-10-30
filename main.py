@@ -153,7 +153,7 @@ def check():
             post(
                 getenv('WEBHOOK'),
                 json={
-                    'content': "It looks like the ** :gmeet: Google Meet** just ended! :tada:"
+                    'content': "It looks like the **<:gmeet:755518059703435357> Google Meet** just ended! :tada:"
                 }
             )
         out[i] = [6 if ret == 0 and serialized.get('organization') is None else ret, time()]
