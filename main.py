@@ -156,7 +156,7 @@ def check():
                     'content': "It looks like the ** :gmeet: Google Meet** just ended! :tada:"
                 }
             )
-        out[i] = [ret if ret == 0 else 6, time()]
+        out[i] = [6 if ret == 0 and serialized.get('organization') is None else ret, time()]
 
 
 @auth.verify_password
