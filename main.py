@@ -155,7 +155,7 @@ def check():
                     'content': "It looks like the ** :gmeet: Google Meet** just ended! :tada:"
                 }
             )
-        out[i] = [ret, time()]
+        out[i] = [ret if ret == 0 else 6, time()]
 
 
 @auth.verify_password
