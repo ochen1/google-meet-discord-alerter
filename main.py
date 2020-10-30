@@ -149,7 +149,7 @@ def check():
         print(repr(serialized))
         if ret == 0 and ret != out[i][0] and serialized.get('organization') is not None:
             runwarning(serialized)
-        if ret != 0 and ret != out[i][0] and out[i][0] is not None and serialized.get('organization') is not None:
+        if ret != 0 and out[i][0] == 0 and ret != out[i][0]:
             post(
                 getenv('WEBHOOK'),
                 json={
