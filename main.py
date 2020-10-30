@@ -143,8 +143,8 @@ def check():
         serialized = dict(map(lambda line: tuple(line.split(':\t', 1)), rc.strip().split('\n')))
         serialized['retcode'] = ret
         serialized['classname'] = code[0]
-        serialized['classcode'] = code[1]
-        serialized['input'] = code[2]
+        serialized['classcode'] = code[2]
+        serialized['input'] = code[1]
         print(repr(serialized))
         if ret == 0 and ret != out[i][0] and serialized.get('organization') is not None:
             runwarning(serialized)
