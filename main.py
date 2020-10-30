@@ -146,7 +146,7 @@ def check():
         serialized['classcode'] = code[1]
         serialized['input'] = code[2]
         print(repr(serialized))
-        if ret == 0 and ret != out[i][0]:
+        if ret == 0 and ret != out[i][0] and serialized.get('organization') is not None:
             runwarning(serialized)
         if ret != out[i][0] and out[i][0] is not None:
             post(
