@@ -40,11 +40,171 @@ def runwarning(parsed):
     meetingspacelen = len(meetingspace)
     meetingspace = meetingspace[0:meetingspacelen // 2] + \
                    ''.join(repeat('\\*', meetingspacelen - (meetingspacelen // 2)))
+
+    # TODO: Use cards for more data + visually pleasing format
+    if getenv('GCHATWEBHOOK', False):
+        post(
+            getenv('GCHATWEBHOOK'),
+            json={
+                'text': """<users/all> *{classname}*
+A <https://meet.google.com/{meetpath}|Google Meet> has resolved! This usually means a teacher joined the meet.
+You can also check the the <https://classroom.google.com/c/{classcode}|Google Classroom for this course>.
+""".format(
+                    classname=parsed['classname'],
+                    classcode=parsed['classcode'],
+                    meetpath='/'.join(['lookup' if '-' not in parsed['input'] else '_meet', parsed['input']])
+                ),
+                'cards': [
+                    {
+                        'header': {
+                            'title': "GMDA - Chat Alerts",
+                            'subtitle': "by Oliver Chen EPSB/GVH/G9",
+                            'imageStyle': "AVATAR",
+                            'imageUrl': "https://www.gstatic.com/images/branding/product/2x/hh_chat_64dp.png"
+                        },
+                        'sections': [
+                            {
+                                'header': 'Google Meet',
+                                'widgets': [
+                                    {
+                                        'keyValue': {
+                                            'topLabel': 'Meet ID',
+                                            'content': '/'.join(['lookup' if '-' not in parsed['input'] else '_meet', parsed['input']]),
+                                            'contentMultiline': False,
+                                            'iconUrl': 'https://www.gstatic.com/images/branding/product/2x/hh_meet_64dp.png'
+                                        },
+                                        'buttons': [
+                                            {
+                                                'textButton': {
+                                                    'text': "OPEN MEET",
+                                                    'onClick': {
+                                                        'openLink': {
+                                                            'url': '/'.join([
+                                                                'https://meet.google.com',
+                                                                'lookup' if '-' not in parsed['input'] else '_meet',
+                                                                parsed['input']
+                                                            ])
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                'header': 'Google Classroom',
+                                'widgets': [
+                                    {
+                                        'keyValue': {
+                                            'topLabel': 'Classroom Subject',
+                                            'content': parsed['classname'],
+                                            'contentMultiline': False,
+                                            'iconUrl': 'https://www.gstatic.com/images/branding/product/2x/classroom_64dp.png'
+                                        },
+                                        'buttons': [
+                                            {
+                                                'textButton': {
+                                                    'text': "OPEN CLASSROOM",
+                                                    'onClick': {
+                                                        'openLink': {
+                                                            'url': '/'.join(['https://classroom.google.com/c',
+                                                                             parsed['classcode']])
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                'header': 'Timestamp',
+                                'widgets': [
+                                    {
+                                        'keyValue': {
+                                            'topLabel': 'Time',
+                                            'content': strftime("%Y-%m-%d %H:%M:%S GMT", gmtime()),
+                                            'contentMultiline': False,
+                                            'onClick': {
+                                                'openLink': {
+                                                    'url': 'https://time.is/UTC'
+                                                }
+                                            },
+                                            'icon': 'CLOCK'
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                'header': 'Join us on Discord!',
+                                'widgets': [
+                                    {
+                                        'buttons': [
+                                            {
+                                                'imageButton': {
+                                                    'onClick': {
+                                                        'openLink': {
+                                                            'url': 'https://discord.gg/d54xvRGDcS'
+                                                        }
+                                                    },
+                                                    'name': 'Discord Invite',
+                                                    'iconUrl': 'https://discord.com/assets/2c21aeda16de354ba5334551a883b481.png'
+                                                }
+                                            },
+                                            {
+                                                'textButton': {
+                                                    'text': 'GET INVITE',
+                                                    'onClick': {
+                                                        'openLink': {
+                                                            'url': 'https://discord.gg/d54xvRGDcS'
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                'textButton': {
+                                                    'text': 'REGISTER',
+                                                    'onClick': {
+                                                        'openLink': {
+                                                            'url': 'https://discord.com/register'
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                'header': "Disclaimer", # TODO: Remove disclaimer header if possible
+                                'widgets': [
+                                    {
+                                        'textParagraph': {
+                                            'text': "<font color=\"#888888\">This Google Chat bot by Oliver Chen is "
+                                                    "provided \"AS IS\". Oliver makes no other warranties, "
+                                                    "expressive or implied, and hereby disclaims all implied "
+                                                    "warranties, including any warranty of merchantability and "
+                                                    "warranty of fitness for a particular purpose.</font>"
+                                        }
+                                    }
+                                ]
+                            }
+                            # TODO: Note: debug tools and Meetspace identity verification is only available via Discord
+                        ],
+                        'cardActions': []
+                    }
+                ]
+            }
+        )
+
     post(
         getenv('WEBHOOK'),
         json={
-            'content': "<@&%s>\nDisclaimer: This Discord bot by Oliver Chen is provided \"AS IS\". Oliver makes no other warranties, expressive or implied, and hereby disclaims all implied warranties, including any warranty of merchantability and warranty of fitness for a particular purpose." % getenv(
-                "EVENT_PING_ID"),
+            'content': "<@&%s>\nDisclaimer: Google Meet Discord Alerter by Oliver Chen is provided \"AS IS\". Oliver "
+                       "makes no other warranties, expressive or implied, and hereby disclaims all implied "
+                       "warranties, including any warranty of merchantability and warranty of fitness for a "
+                       "particular purpose." % getenv("EVENT_PING_ID"),
             "embeds": [{
                 "title": "Google Meet started!",
                 "description": "A Google Meet for your class `%s` resolved!\nThis usually means a teacher has joined the meet!\nHurry and join in ASAP!" %
@@ -63,7 +223,7 @@ def runwarning(parsed):
                 "fields": [
                     {
                         "name": "<:gclassroom:755519374277738536> Google Classroom",
-                        "value": "Click [<:gclassroom:755519374277738536> here](https://classroom.google.com/u/0/c/%s) to go to the event Classroom." %
+                        "value": "Click [<:gclassroom:755519374277738536> here](https://classroom.google.com/c/%s) to go to the event Classroom." %
                                  parsed['classcode'],
                         "inline": False
                     },
