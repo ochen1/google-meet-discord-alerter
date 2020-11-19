@@ -123,11 +123,10 @@ You can also check the the <https://classroom.google.com/c/{classcode}|Google Cl
                                 ]
                             },
                             {
-                                'header': 'Timestamp',
                                 'widgets': [
                                     {
                                         'keyValue': {
-                                            'topLabel': 'Time',
+                                            'topLabel': 'Timestamp',
                                             'content': strftime("%Y-%m-%d %H:%M:%S GMT", gmtime()),
                                             'contentMultiline': False,
                                             'onClick': {
