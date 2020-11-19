@@ -192,7 +192,7 @@ You can also check the the <https://classroom.google.com/c/{classcode}|Google Cl
                                                     "provided \"AS IS\". Oliver makes no other warranties, "
                                                     "expressive or implied, and hereby disclaims all implied "
                                                     "warranties, including any warranty of merchantability and "
-                                                    "warranty of fitness for a particular purpose.</font>"
+                                                    "warranty of fitness for a particular purpose. v9.6.0</font>"
                                         }
                                     }
                                 ]
