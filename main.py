@@ -43,9 +43,13 @@ def runwarning(parsed):
 
     # TODO: Use cards for more data + visually pleasing format
     if getenv('GCHATWEBHOOK', False):
-        post(
-            getenv('GCHATWEBHOOK'),
+        print("https://chat.googleapis.com/v1/%s/messages?%s" % (getenv('GCHATSPACE'), getenv('GCHATWEBHOOK')))
+        print(post(
+            "https://chat.googleapis.com/v1/%s/messages?%s" % (getenv('GCHATSPACE'), getenv('GCHATWEBHOOK')),
             json={
+                'thread': {
+                    'name': '/'.join([getenv('GCHATSPACE'), getenv('GCHATTHREAD')])
+                },
                 'text': """<users/all> *{classname}*
 A <https://meet.google.com/{meetpath}|Google Meet> has resolved! This usually means a teacher joined the meet.
 You can also check the the <https://classroom.google.com/c/{classcode}|Google Classroom for this course>.
@@ -198,7 +202,7 @@ You can also check the the <https://classroom.google.com/c/{classcode}|Google Cl
                     }
                 ]
             }
-        )
+        ).text)
 
     post(
         getenv('WEBHOOK'),
