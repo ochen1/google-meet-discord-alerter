@@ -172,16 +172,19 @@ You can also check the the <https://classroom.google.com/c/{classcode}|Google Cl
                                                     }
                                                 }
                                             }
-                                        ]
+                                        ],
+                                        'textParagraph': {
+                                            'text': "Additional Meet verification, dev tools, and fault explanations "
+                                                    "are only available on the Discord server."
+                                        }
                                     }
                                 ]
                             },
                             {
-                                'header': "Disclaimer", # TODO: Remove disclaimer header if possible
                                 'widgets': [
                                     {
                                         'textParagraph': {
-                                            'text': "<font color=\"#888888\">This Google Chat bot by Oliver Chen is "
+                                            'text': "<font color=\"#888888\">This service provided by Oliver Chen is "
                                                     "provided \"AS IS\". Oliver makes no other warranties, "
                                                     "expressive or implied, and hereby disclaims all implied "
                                                     "warranties, including any warranty of merchantability and "
@@ -190,7 +193,6 @@ You can also check the the <https://classroom.google.com/c/{classcode}|Google Cl
                                     }
                                 ]
                             }
-                            # TODO: Note: debug tools and Meetspace identity verification is only available via Discord
                         ],
                         'cardActions': []
                     }
