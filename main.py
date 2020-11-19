@@ -178,8 +178,8 @@ You can also check the the <https://classroom.google.com/c/{classcode}|Google Cl
                                             }
                                         ],
                                         'textParagraph': {
-                                            'text': "Additional Meet verification, dev tools, and fault explanations "
-                                                    "are only available on the Discord server."
+                                            'text': "Google Meet end alerts, additional Meet verification, dev tools, "
+                                                    "and fault explanations are only available on the Discord server."
                                         }
                                     }
                                 ]
