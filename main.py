@@ -145,7 +145,7 @@ You can also check the the <https://classroom.google.com/c/{classcode}|Google Cl
                                                 'imageButton': {
                                                     'onClick': {
                                                         'openLink': {
-                                                            'url': 'https://discord.gg/d54xvRGDcS'
+                                                            'url': getenv('DISCORDINV', 'https://discord.gg/')
                                                         }
                                                     },
                                                     'name': 'Discord Invite',
@@ -157,7 +157,7 @@ You can also check the the <https://classroom.google.com/c/{classcode}|Google Cl
                                                     'text': 'GET INVITE',
                                                     'onClick': {
                                                         'openLink': {
-                                                            'url': 'https://discord.gg/d54xvRGDcS'
+                                                            'url': getenv('DISCORDINV', 'https://discord.gg/')
                                                         }
                                                     }
                                                 }
