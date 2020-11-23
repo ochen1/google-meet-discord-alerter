@@ -206,5 +206,5 @@ if __name__ == '__main__':
     ret = resolve_meeting_code(code)
     ret = zip(('spacecode', 'meetcode', 'meeturl', 'gmeettoken', 'lookupcode', 'organization', 'maxmeetsize',), ret)
     for field, value in ret:
-        if value is not None:
+        if value is not None and all([t is str for t in map(type, (field, value))]):
             print(SERIALIZATION_DELIM.join([field, value]))
