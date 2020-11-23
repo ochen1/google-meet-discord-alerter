@@ -19,7 +19,7 @@ import sys
 from requests import get, post
 from urllib.parse import urlparse
 from base64 import b64decode
-from re import match
+from re import match, findall
 from os import getenv
 from time import time
 from http.cookies import SimpleCookie
@@ -174,7 +174,7 @@ def resolve_meeting_code(meetcode):
     p = loadsJSON(p[0])
 
     spacecode = p['1']
-    meetcode = p['2']
+    meetcode = p['2'] if type(p['2']) is str else findall(r"https?://meet\.google\.com/(?:_meet/)?(\w{3}-\w{4}-\w{3})(?:\?.*)?$", p['3'])[0]
     meeturl = p['3']
     lookupcode = p.get('7', None)
     gmeettoken = r.headers.get('x-goog-meeting-token', None)
@@ -207,4 +207,4 @@ if __name__ == '__main__':
     ret = zip(('spacecode', 'meetcode', 'meeturl', 'gmeettoken', 'lookupcode', 'organization', 'maxmeetsize',), ret)
     for field, value in ret:
         if value is not None:
-            print(SERIALIZATION_DELIM.join((field, value,)))
+            print(SERIALIZATION_DELIM.join([field, value]))
