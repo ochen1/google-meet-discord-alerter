@@ -217,8 +217,8 @@ You can also check the the <https://classroom.google.com/c/{classcode}|Google Cl
                 "color": 8977942,
                 "timestamp": strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()),
                 "footer": {
-                    "icon_url": "https://cdn.discordapp.com/avatars/694234706430001222/bc76d00201925b023f550655bea29adc.png",
-                    "text": "idontknow#6929"
+                    "icon_url": "https://cdn.discordapp.com/avatars/694234706430001222/65e0958748317bbf206260acd6dba539.png",
+                    "text": "idontknow#8950"
                 },
                 "author": {
                     "name": "Google Meet Alerter Bot - Reminder",
