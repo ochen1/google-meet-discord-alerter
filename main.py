@@ -270,13 +270,9 @@ You can also check the the <https://classroom.google.com/c/{classcode}|Google Cl
                         "inline": True
                     },
                     {
-                        "name": ":hash: Meet Details",
-                        "value": "Number of people in the meet as of now: [subproject abandoned]",
-                        "inline": False
-                    },
-                    {
                         "name": "Want to contribute?",
-                        "value": "[Report an issue/suggestion](https://ochen1.github.io/google-meet-discord-alerter/ticket.html) or email o.chen1@share.epsb.ca to help develop!"
+                        "value": "[Report an issue/suggestion](https://ochen1.github.io/google-meet-discord-alerter/ticket.html) or email o.chen1@share.epsb.ca to help develop!",
+                        "inline": False
                     }
                 ]
             }]
