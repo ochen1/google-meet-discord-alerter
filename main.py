@@ -227,14 +227,14 @@ You can also check the the <https://classroom.google.com/c/{classcode}|Google Cl
                 },
                 "fields": [
                     {
-                        "name": "<:gclassroom:755519374277738536> Google Classroom",
-                        "value": "Click [<:gclassroom:755519374277738536> here](https://classroom.google.com/c/%s) to go to the event Classroom." %
+                        "name": "<:gclassroom:836629105213571134> Google Classroom",
+                        "value": "Click [<:gclassroom:836629105213571134> here](https://classroom.google.com/c/%s) to go to the event Classroom." %
                                  parsed['classcode'],
                         "inline": False
                     },
                     {
-                        "name": "<:gmeet:755518059703435357> Google Meet",
-                        "value": "Click [<:gmeet:755518059703435357> here](https://meet.google.com/%s%s) to enter the meet." %
+                        "name": "<:gmeet:836629017774915625> Google Meet",
+                        "value": "Click [<:gmeet:836629017774915625> here](https://meet.google.com/%s%s) to enter the meet." %
                                  ('lookup/' if '-' not in parsed['input'] else '_meet/', parsed['input']),
                         "inline": False
                     },
@@ -318,7 +318,7 @@ def check():
             post(
                 getenv('WEBHOOK'),
                 json={
-                    'content': "It looks like the **<:gmeet:755518059703435357> Google Meet** just ended! :tada:"
+                    'content': "It looks like the **<:gmeet:836629017774915625> Google Meet** just ended! :tada:"
                 }
             )
         out[i] = [6 if ret == 0 and serialized.get('organization') is None else ret, time()]
